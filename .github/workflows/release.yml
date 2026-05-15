@@ -1,0 +1,17 @@
+---
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    uses: appvia/appvia-cicd-workflows/.github/workflows/terraform-module-release.yml@4967cdeb23da32ec87d1f75f6feed95447983522 # main
+    name: GitHub Release
+    with:
+      enable-cliff: true
