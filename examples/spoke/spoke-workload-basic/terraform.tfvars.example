@@ -1,0 +1,12 @@
+aws_region = "eu-west-2"
+
+# Captured from examples/hosting-account agent_space_arn output after Phase 1.
+agent_space_arn = "arn:aws:aidevops:eu-west-1:111111111111:agentspace/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+
+role_name = "DevOpsAgentCrossAccountRole"
+
+tags = {
+  Environment = "dev"
+  Product     = "devops-agent"
+  Owner       = "platform-team"
+}
