@@ -60,11 +60,7 @@ flowchart LR
 | Hub | `DevOpsAgentRole-WebappAdmin-<prefix>` | `AIDevOpsOperatorAppAccessPolicy` | Operator web app authentication |
 | Each spoke | `DevOpsAgentCrossAccountRole` | `AIDevOpsAgentAccessPolicy` | Agent read access to workload resources; trust scoped to the specific AgentSpace ARN |
 
-The cross-account trust policy in each spoke references the exact `agent_space_arn` output from Phase 1 — a wildcard trust across all Agent Spaces in the hosting account is not used.
-
-**Cross-region monitoring:** The AgentSpace region does not constrain which AWS regions the agent can query. Workload accounts in `eu-west-2` are fully visible from an AgentSpace hosted in `eu-west-1`.
-
-> **Note:** `eu-west-2` (London) is not a supported AgentSpace region. For UK gov, deploy the AgentSpace itself into `eu-west-1` (Ireland) or `eu-central-1` (Frankfurt) — workloads in `eu-west-2` remain fully visible.
+The cross-account trust policy in each spoke references the exact `agent_space_arn` output from Phase 1 — a wildcard trust across all Agent Spaces in the hosting account is not used. Use the `modules/spoke` submodule (included in this module) to create this role in each workload account.
 
 **Cross-region monitoring:** The AgentSpace region does not constrain which AWS regions the agent can query. Workload accounts in `eu-west-2` are fully visible from an AgentSpace hosted in `eu-west-1`.
 
@@ -116,12 +112,50 @@ output "agent_space_arn" {
 
 ### With Workload Account Associations (Phase 2)
 
-After capturing `agent_space_arn` from Phase 1, deploy the cross-account IAM role in each workload account with a trust policy referencing that ARN. Then re-apply with `secondary_accounts` populated:
+After Phase 1, use the `modules/spoke` submodule to create the cross-account IAM role in each workload account. Each spoke is called with a provider alias pointing at that account. The `agent_space_arn` from Phase 1 is passed in directly — the spoke module extracts the hosting account ID from it automatically.
 
 ```hcl
-module "devops_agent" {
-  source = "appvia/devops-agent/aws"
+# Configure provider aliases — one per account
+provider "aws" {
+  alias = "hosting"
+  # assume_role or profile for the hosting account
+}
+
+provider "aws" {
+  alias = "dev"
+  # assume_role or profile for the dev workload account
+}
+
+provider "aws" {
+  alias = "payments"
+  # assume_role or profile for the payments workload account
+}
+
+# Phase 2a — deploy spoke roles into each workload account
+module "spoke_dev" {
+  source  = "appvia/devops-agent/aws//modules/spoke"
   version = "0.1.0"
+  providers = { aws = aws.dev }
+
+  agent_space_arn = "arn:aws:aidevops:eu-west-1:HOSTING_ACCOUNT_ID:agentspace/AGENT_SPACE_ID"
+}
+
+module "spoke_payments" {
+  source  = "appvia/devops-agent/aws//modules/spoke"
+  version = "0.1.0"
+  providers = { aws = aws.payments }
+
+  agent_space_arn = "arn:aws:aidevops:eu-west-1:HOSTING_ACCOUNT_ID:agentspace/AGENT_SPACE_ID"
+}
+
+# Phase 2b — re-apply the hub with secondary_accounts populated from spoke outputs
+module "devops_agent" {
+  source  = "appvia/devops-agent/aws"
+  version = "0.1.0"
+  providers = {
+    aws   = aws.hosting
+    awscc = awscc.hosting
+  }
 
   agent_space_name        = "Platform Team"
   agent_space_description = "DevOps Agent Space for the Platform Engineering team"
@@ -131,11 +165,11 @@ module "devops_agent" {
   secondary_accounts = {
     dev = {
       account_id             = "111122223333"
-      cross_account_role_arn = "arn:aws:iam::111122223333:role/DevOpsAgentCrossAccountRole"
+      cross_account_role_arn = module.spoke_dev.role_arn
     }
     payments = {
       account_id             = "444455556666"
-      cross_account_role_arn = "arn:aws:iam::444455556666:role/DevOpsAgentCrossAccountRole"
+      cross_account_role_arn = module.spoke_payments.role_arn
     }
   }
 
@@ -147,7 +181,7 @@ module "devops_agent" {
 }
 ```
 
-> **Two-phase apply is required.** The cross-account role trust policy in each workload account must reference the real `agent_space_arn`. That ARN does not exist until Phase 1 completes. A single-pass apply with `secondary_accounts` pre-populated will fail because the trust policy cannot reference an ARN that does not yet exist.
+> **Two-phase apply is required.** The spoke trust policy must reference the real `agent_space_arn`, which only exists after Phase 1 completes. Hardcode the ARN from the Phase 1 output into each spoke module call, then apply Phase 2 — Terraform will create the spoke roles first (they have no dependency on the hub in Phase 2) and then update the hub associations.
 
 ### Per-Team Pattern (Multiple Agent Spaces in One Account)
 
@@ -196,7 +230,11 @@ The `agentspace_region` variable is validated against the regions where the `aid
 | `us-east-1` | US East (N. Virginia) |
 | `us-west-2` | US West (Oregon) |
 | `eu-west-1` | Europe (Ireland) |
-| `eu-west-2` | Europe (London) |
+| `eu-central-1` | Europe (Frankfurt) |
+| `ap-southeast-2` | Asia Pacific (Sydney) |
+| `ap-northeast-1` | Asia Pacific (Tokyo) |
+
+> **Note:** `eu-west-2` (London) is not a supported AgentSpace region. For UK gov data residency, deploy into `eu-west-1` (Ireland) or `eu-central-1` (Frankfurt).
 
 ## Examples
 
@@ -235,7 +273,7 @@ The `terraform-docs` utility is used to generate this README. Follow the below s
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_agent_space_name"></a> [agent\_space\_name](#input\_agent\_space\_name) | Display name of the DevOps Agent Space (shown in the console — spaces allowed) | `string` | n/a | yes |
-| <a name="input_agentspace_region"></a> [agentspace\_region](#input\_agentspace\_region) | AWS region where the agentspace is deployed (aidevops is in specific regions only: us-east-1, us-west-2, eu-west-1, eu-west-2) | `string` | n/a | yes |
+| <a name="input_agentspace_region"></a> [agentspace\_region](#input\_agentspace\_region) | AWS region where the Agent Space is deployed. Supported regions: us-east-1, us-west-2, eu-west-1, eu-central-1, ap-southeast-2, ap-northeast-1. eu-west-2 (London) is not supported. | `string` | n/a | yes |
 | <a name="input_agent_space_description"></a> [agent\_space\_description](#input\_agent\_space\_description) | Description for the DevOps Agent Space | `string` | `"AWS DevOps Agent Space"` | no |
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | Short slug used in IAM role names — no spaces or special chars. Defaults to agent\_space\_name with spaces replaced by hyphens if not set. | `string` | `""` | no |
 | <a name="input_secondary_accounts"></a> [secondary\_accounts](#input\_secondary\_accounts) | Map of workload accounts to associate as secondary sources. Key is a short label used in resource names. Leave empty on first apply; populate after capturing agent\_space\_arn. | <pre>map(object({<br/>  account_id             = string<br/>  cross_account_role_arn = string<br/>}))</pre> | `{}` | no |
