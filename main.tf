@@ -1,4 +1,4 @@
- # Wait for IAM propagation before creating the Agent Space
+# Wait for IAM propagation before creating the Agent Space
 resource "time_sleep" "iam_propagation" {
   depends_on = [
     aws_iam_role.agentspace,
@@ -47,7 +47,7 @@ workload's cross-account role trust policy references the real agentspace ARN, t
 populate the map and apply again.
 */
 resource "awscc_devopsagent_association" "workload" {
-  for_each = var.secondary_accounts
+  for_each       = var.secondary_accounts
   agent_space_id = awscc_devopsagent_agent_space.this.id
   service_id     = "aws"
 
