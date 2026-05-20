@@ -1,4 +1,4 @@
-# Wait for IAM propagation before creating the Agent Space
+ # Wait for IAM propagation before creating the Agent Space
 resource "time_sleep" "iam_propagation" {
   depends_on = [
     aws_iam_role.agentspace,
