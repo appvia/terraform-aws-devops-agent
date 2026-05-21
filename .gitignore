@@ -33,6 +33,10 @@ terraform.rc
 .DS_Store
 todo.md
 
+# AI context files — internal developer notes, not for public release
+CLAUDE.md
+claude-planning/
+
 # Ignore vim swap files
 *.swp
 *.swo
@@ -45,3 +49,4 @@ todo.md
 # Ignore lambda zip files and build directories
 *.zip
 builds/
+.vscode/settings.json

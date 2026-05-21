@@ -1,4 +1,4 @@
-#header-from: .header.md
+header-from: .header.md
 settings:
   anchor: true
   color: true

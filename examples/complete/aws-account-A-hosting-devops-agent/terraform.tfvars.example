@@ -1,0 +1,28 @@
+aws_region        = "eu-west-2"
+agentspace_region = "eu-west-1"
+
+agent_space_name        = "DevOpsAgentSpace-MyWorkload"
+name_prefix             = "MyWorkload"
+agent_space_description = "AWS DevOps Agent Space monitoring MyWorkload"
+
+# Phase 1: leave secondary_accounts empty and apply.
+# After applying, capture the agent_space_arn output, then deploy the spoke
+# configuration in the workload account (see examples/spoke/).
+# Phase 2: populate this map with the spoke role ARN and re-apply.
+secondary_accounts = {
+  aws-account-B-spoke-workload = {
+    account_id             = "111111111111"
+    cross_account_role_arn = "arn:aws:iam::111111111111:role/DevOpsAgentCrossAccountRole"
+  }
+  aws-account-C-spoke-workload = {
+    account_id             = "222222222222"
+    cross_account_role_arn = "arn:aws:iam::222222222222:role/DevOpsAgentCrossAccountRole"
+  }
+  
+}
+
+tags = {
+  Environment = "production"
+  Product     = "devops-agent"
+  Owner       = "platform-team"
+}
