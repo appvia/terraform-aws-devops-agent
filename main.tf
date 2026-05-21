@@ -20,6 +20,14 @@ resource "awscc_devopsagent_agent_space" "this" {
     }
   }
 
+  # terraform expects set of objects for tags this awscc resource, but we want to allow users to provide a simple map in variable to make it re-usable
+  tags = toset([
+    for k, v in var.tags : {
+      key   = k
+      value = v
+    }
+  ])
+
   depends_on = [time_sleep.iam_propagation]
 }
 

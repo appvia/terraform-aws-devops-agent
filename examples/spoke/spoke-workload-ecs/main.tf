@@ -21,7 +21,7 @@
 
 module "spoke" {
   source  = "appvia/devops-agent/aws//modules/spoke"
-  version = "v1.0.0"
+  version = "~> 0.1"
 
   agent_space_arn          = var.agent_space_arn
   role_name                = var.role_name
