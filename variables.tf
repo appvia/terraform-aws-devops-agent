@@ -7,6 +7,10 @@ variable "name_prefix" {
   description = "Short slug used in IAM role names — no spaces or special chars (defaults to agent_space_name if not set)"
   type        = string
   default     = ""
+  validation {
+    condition     = length(var.name_prefix) <= 35
+    error_message = "name_prefix must be 35 characters or fewer — IAM role names are limited to 64 chars and the longest prefix 'DevOpsAgentRole-WebappAdmin-' is 29 chars."
+  }
 }
 
 variable "agent_space_description" {
