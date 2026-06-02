@@ -8,6 +8,12 @@
 # terraform lock file
 .terraform.lock.hcl
 
+# terraform tfvars
+*.tfvars
+
+# exclude tfvars.example files as they are meant to be checked in as examples
+!*.tfvars.example
+
 # Crash log files
 crash.log
 crash.*.log

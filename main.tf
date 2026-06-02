@@ -1,4 +1,4 @@
- # Wait for IAM propagation before creating the Agent Space
+# Wait for IAM propagation before creating the Agent Space
 resource "time_sleep" "iam_propagation" {
   depends_on = [
     aws_iam_role.agentspace,
@@ -19,6 +19,14 @@ resource "awscc_devopsagent_agent_space" "this" {
       operator_app_role_arn = aws_iam_role.operator.arn
     }
   }
+
+  # terraform expects set of objects for tags this awscc resource, but we want to allow users to provide a simple map in variable to make it re-usable
+  tags = toset([
+    for k, v in var.tags : {
+      key   = k
+      value = v
+    }
+  ])
 
   depends_on = [time_sleep.iam_propagation]
 
@@ -51,7 +59,7 @@ workload's cross-account role trust policy references the real agentspace ARN, t
 populate the map and apply again.
 */
 resource "awscc_devopsagent_association" "workload" {
-  for_each = var.secondary_accounts
+  for_each       = var.secondary_accounts
   agent_space_id = awscc_devopsagent_agent_space.this.id
   service_id     = "aws"
 

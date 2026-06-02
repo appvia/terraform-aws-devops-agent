@@ -50,9 +50,9 @@ resource "aws_iam_role_policy" "agentspace_deny_primary_discovery" {
     Version = "2012-10-17"
     Statement = [
       {
-        Sid    = "DenyResourceExplorer"
-        Effect = "Deny"
-        Action = ["resource-explorer-2:*"]
+        Sid      = "DenyResourceExplorer"
+        Effect   = "Deny"
+        Action   = ["resource-explorer-2:*"]
         Resource = "*"
       },
       {

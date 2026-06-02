@@ -294,9 +294,9 @@ resource "aws_iam_policy" "devops_agent_boundary" {
 
       # ── Resource Explorer SLR — must be in boundary as well as role policy ────
       {
-        Sid    = "AllowResourceExplorerSLR"
-        Effect = "Allow"
-        Action = "iam:CreateServiceLinkedRole"
+        Sid      = "AllowResourceExplorerSLR"
+        Effect   = "Allow"
+        Action   = "iam:CreateServiceLinkedRole"
         Resource = "*"
         Condition = {
           StringEquals = { "iam:AWSServiceName" = "resource-explorer-2.amazonaws.com" }

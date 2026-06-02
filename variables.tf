@@ -4,7 +4,7 @@ variable "agent_space_name" {
 }
 
 variable "name_prefix" {
-  description = "Short slug used in IAM role names — no spaces or special chars (defaults to agent_space_name if not set)"
+  description = "Short slug used in IAM role names — no spaces or special chars. Defaults to agent_space_name with spaces replaced by hyphens if not set."
   type        = string
   default     = ""
   validation {
