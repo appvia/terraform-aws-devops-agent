@@ -2,6 +2,12 @@ data "aws_iam_policy" "devops_agent_access" {
   name = "AIDevOpsAgentAccessPolicy"
 }
 
+locals {
+  # Extract the hosting account ID from the AgentSpace ARN for SourceAccount condition.
+  # arn:aws:aidevops:<region>:<account-id>:agentspace/<id>
+  hub_account_id = regex("arn:aws:aidevops:[^:]+:([0-9]+):agentspace/.*", var.agent_space_arn)[0]
+}
+
 resource "aws_iam_role" "devops_agent" {
   name                 = var.role_name
   permissions_boundary = var.permissions_boundary_arn
@@ -16,10 +22,13 @@ resource "aws_iam_role" "devops_agent" {
         }
         Action = "sts:AssumeRole"
         Condition = {
-          # ArnEquals pins account + Agent Space — no wildcard,
-          # unlike the hub roles which use agentspace/*.
+          # ArnEquals pins to the exact AgentSpace — no wildcard unlike hub roles.
+          # SourceAccount is defense-in-depth; ArnEquals already implicitly validates account.
           ArnEquals = {
             "aws:SourceArn" = var.agent_space_arn
+          }
+          StringEquals = {
+            "aws:SourceAccount" = local.hub_account_id
           }
         }
       }

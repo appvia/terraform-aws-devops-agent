@@ -29,6 +29,10 @@ resource "awscc_devopsagent_agent_space" "this" {
   ])
 
   depends_on = [time_sleep.iam_propagation]
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 # Primary account association (hosting account as monitor)
