@@ -24,7 +24,8 @@
 #####################################################################################
 
 module "spoke" {
-  source = "appvia/devops-agent/aws//modules/spoke"
+  source  = "appvia/devops-agent/aws//modules/spoke"
+  version = "0.1.1"
 
   agent_space_arn          = var.agent_space_arn
   role_name                = var.role_name

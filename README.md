@@ -271,24 +271,32 @@ The `terraform-docs` utility is used to generate this README. Follow the below s
 3. Run `terraform-docs markdown table --output-file ${PWD}/README.md --output-mode inject .`
 
 <!-- BEGIN_TF_DOCS -->
+## Providers
+
+| Name | Version |
+| ---- | ------- |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.0.0 |
+| <a name="provider_awscc"></a> [awscc](#provider\_awscc) | ~> 1.0 |
+| <a name="provider_time"></a> [time](#provider\_time) | ~> 0.9 |
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_agent_space_name"></a> [agent\_space\_name](#input\_agent\_space\_name) | Display name of the DevOps Agent Space (shown in the console — spaces allowed) | `string` | n/a | yes |
 | <a name="input_agentspace_region"></a> [agentspace\_region](#input\_agentspace\_region) | AWS region where the Agent Space is deployed. Supported regions: us-east-1, us-west-2, eu-west-1, eu-central-1, ap-southeast-2, ap-northeast-1. eu-west-2 (London) is not supported. | `string` | n/a | yes |
 | <a name="input_agent_space_description"></a> [agent\_space\_description](#input\_agent\_space\_description) | Description for the DevOps Agent Space | `string` | `"AWS DevOps Agent Space"` | no |
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | Short slug used in IAM role names — no spaces or special chars. Defaults to agent\_space\_name with spaces replaced by hyphens if not set. | `string` | `""` | no |
-| <a name="input_secondary_accounts"></a> [secondary\_accounts](#input\_secondary\_accounts) | Map of workload accounts to associate as secondary sources. Key is a short label used in resource names. Leave empty on first apply; populate after capturing agent\_space\_arn. | <pre>map(object({<br/>  account_id             = string<br/>  cross_account_role_arn = string<br/>}))</pre> | `{}` | no |
-| <a name="input_tags"></a> [tags](#input\_tags) | Tags to apply to all resources | `map(string)` | `{}` | no |
+| <a name="input_secondary_accounts"></a> [secondary\_accounts](#input\_secondary\_accounts) | Map of secondary accounts to associate as secondary sources. Key is a short label (used in resource names). Leave empty on first apply; populate after capturing agent\_space\_arn. | <pre>map(object({<br/>    account_id             = string<br/>    cross_account_role_arn = string<br/>  }))</pre> | `{}` | no |
+| <a name="input_tags"></a> [tags](#input\_tags) | Tags to apply to resources | `map(string)` | `{}` | no |
 
 ## Outputs
 
 | Name | Description |
-|------|-------------|
-| <a name="output_agent_space_id"></a> [agent\_space\_id](#output\_agent\_space\_id) | ID of the DevOps Agent Space |
+| ---- | ----------- |
 | <a name="output_agent_space_arn"></a> [agent\_space\_arn](#output\_agent\_space\_arn) | ARN of the DevOps Agent Space — use this to scope the workload cross-account role trust policy |
+| <a name="output_agent_space_id"></a> [agent\_space\_id](#output\_agent\_space\_id) | ID of the DevOps Agent Space |
 | <a name="output_agent_space_name"></a> [agent\_space\_name](#output\_agent\_space\_name) | Name of the DevOps Agent Space |
-| <a name="output_agentspace_role_arn"></a> [agentspace\_role\_arn](#output\_agentspace\_role\_arn) | ARN of the DevOps AgentSpace IAM role (assumed by the agent for resource indexing) |
-| <a name="output_operator_role_arn"></a> [operator\_role\_arn](#output\_operator\_role\_arn) | ARN of the DevOps Operator App IAM role (assumed by the agent to drive the web app) |
+| <a name="output_agentspace_role_arn"></a> [agentspace\_role\_arn](#output\_agentspace\_role\_arn) | ARN of the DevOps AgentSpace IAM role |
+| <a name="output_operator_role_arn"></a> [operator\_role\_arn](#output\_operator\_role\_arn) | ARN of the DevOps Operator App IAM role |
 <!-- END_TF_DOCS -->

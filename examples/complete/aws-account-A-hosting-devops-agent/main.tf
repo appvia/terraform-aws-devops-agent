@@ -17,6 +17,7 @@
 
 module "devops_agent" {
   source  = "appvia/devops-agent/aws"
+  version = "0.1.1"
 
   agent_space_name        = var.agent_space_name
   name_prefix             = var.name_prefix
