@@ -64,7 +64,7 @@ The cross-account trust policy in each spoke references the exact `agent_space_a
 
 **Cross-region monitoring:** The AgentSpace region does not constrain which AWS regions the agent can query. Workload accounts in `eu-west-2` are fully visible from an AgentSpace hosted in `eu-west-1`.
 
-> **Note:** For UK gov, deploy the AgentSpace itself into `eu-west-1` (Ireland) or `eu-central-1` (Frankfurt) — workloads in `eu-west-2` remain fully visible.
+> **Note:** For UK gov, deploy the AgentSpace into `eu-west-1` (Ireland) or `eu-central-1` (Frankfurt) — workloads in `eu-west-2` remain fully visible via cross-region monitoring.
 
 ### 🔐 **Security — IAM Deny Policies, Not Tag Restrictions**
 
@@ -76,7 +76,7 @@ AWS supports restricting the agent via IAM tag conditions. This module deliberat
 
 ### 🌍 **EU / UK Government Data Residency**
 
-At GA (March 2026), AWS confirmed EU-hosted Agent Spaces process inference within the EU — requests do not route through US infrastructure. For UK gov and EU workloads, deploy the AgentSpace into `eu-west-1` (Ireland) or `eu-central-1` (Frankfurt). Workload accounts in `eu-west-2` (London) are fully visible from either region — cross-region monitoring is supported regardless of where the AgentSpace is hosted.
+At GA (March 2026), AWS confirmed EU-hosted Agent Spaces process inference within the EU — requests do not route through US infrastructure. For UK gov and EU workloads, deploy the AgentSpace into `eu-west-1` (Ireland) or `eu-central-1` (Frankfurt). Workload accounts in `eu-west-2` (London) are fully visible from either region — cross-region monitoring is supported regardless of where the AgentSpace is hosted. Note: `eu-west-2` has the `aidevops` API endpoint but the `AWS::DevOpsAgent::AgentSpace` CloudFormation type is not yet registered there and cannot be used as the AgentSpace region.
 
 ### 🤖 **Read-Only by Design**
 
@@ -229,13 +229,18 @@ The `agentspace_region` variable is validated against the regions where the `aid
 |---|---|
 | `us-east-1` | US East (N. Virginia) |
 | `us-west-2` | US West (Oregon) |
-| `eu-west-1` | Europe (Ireland) |
-| `eu-west-2` | Europe (London)  |
-| `eu-central-1` | Europe (Frankfurt) |
+| `ca-central-1` | Canada (Central) |
+| `sa-east-1` | South America (São Paulo) |
+| `ap-south-1` | Asia Pacific (Mumbai) |
+| `ap-southeast-1` | Asia Pacific (Singapore) |
 | `ap-southeast-2` | Asia Pacific (Sydney) |
 | `ap-northeast-1` | Asia Pacific (Tokyo) |
+| `eu-central-1` | Europe (Frankfurt) |
+| `eu-west-1` | Europe (Ireland) |
 
-> **Note:** For UK gov data residency, deploy into `eu-west-1` (Ireland), `eu-west-2` or `eu-central-1` (Frankfurt).
+> **Note:** `eu-west-2` (London) has the `aidevops` service API endpoint but the `AWS::DevOpsAgent::AgentSpace` CloudFormation type is not yet registered there — it cannot be used as the AgentSpace region. Workloads in `eu-west-2` are fully visible via cross-region monitoring from an AgentSpace in `eu-west-1` or `eu-central-1`.
+
+> **Note:** For UK gov data residency, deploy into `eu-west-1` (Ireland) or `eu-central-1` (Frankfurt) — workloads in `eu-west-2` remain fully visible.
 
 ## Examples
 
@@ -285,7 +290,7 @@ The `terraform-docs` utility is used to generate this README. Follow the below s
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_agent_space_name"></a> [agent\_space\_name](#input\_agent\_space\_name) | Display name of the DevOps Agent Space (shown in the console — spaces allowed) | `string` | n/a | yes |
-| <a name="input_agentspace_region"></a> [agentspace\_region](#input\_agentspace\_region) | AWS region where the Agent Space is deployed. Supported regions: us-east-1, us-west-2, eu-west-1, eu-west-2, eu-central-1, ap-southeast-2, ap-northeast-1. . | `string` | n/a | yes |
+| <a name="input_agentspace_region"></a> [agentspace\_region](#input\_agentspace\_region) | AWS region where the Agent Space is deployed. Supported regions: us-east-1, us-west-2, ca-central-1, sa-east-1, ap-south-1, ap-southeast-1, ap-southeast-2, ap-northeast-1, eu-central-1, eu-west-1. Note: eu-west-2 has the service API but the CloudFormation type is not yet registered there. | `string` | n/a | yes |
 | <a name="input_agent_space_description"></a> [agent\_space\_description](#input\_agent\_space\_description) | Description for the DevOps Agent Space | `string` | `"AWS DevOps Agent Space"` | no |
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | Short slug used in IAM role names — no spaces or special chars. Defaults to agent\_space\_name with spaces replaced by hyphens if not set. | `string` | `""` | no |
 | <a name="input_secondary_accounts"></a> [secondary\_accounts](#input\_secondary\_accounts) | Map of secondary accounts to associate as secondary sources. Key is a short label (used in resource names). Leave empty on first apply; populate after capturing agent\_space\_arn. | <pre>map(object({<br/>    account_id             = string<br/>    cross_account_role_arn = string<br/>  }))</pre> | `{}` | no |
