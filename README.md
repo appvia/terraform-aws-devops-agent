@@ -64,7 +64,7 @@ The cross-account trust policy in each spoke references the exact `agent_space_a
 
 **Cross-region monitoring:** The AgentSpace region does not constrain which AWS regions the agent can query. Workload accounts in `eu-west-2` are fully visible from an AgentSpace hosted in `eu-west-1`.
 
-> **Note:** `eu-west-2` (London) is not a supported AgentSpace region. For UK gov, deploy the AgentSpace itself into `eu-west-1` (Ireland) or `eu-central-1` (Frankfurt) — workloads in `eu-west-2` remain fully visible.
+> **Note:** For UK gov, deploy the AgentSpace itself into `eu-west-1` (Ireland) or `eu-central-1` (Frankfurt) — workloads in `eu-west-2` remain fully visible.
 
 ### 🔐 **Security — IAM Deny Policies, Not Tag Restrictions**
 
@@ -234,7 +234,7 @@ The `agentspace_region` variable is validated against the regions where the `aid
 | `ap-southeast-2` | Asia Pacific (Sydney) |
 | `ap-northeast-1` | Asia Pacific (Tokyo) |
 
-> **Note:** `eu-west-2` (London) is not a supported AgentSpace region. For UK gov data residency, deploy into `eu-west-1` (Ireland) or `eu-central-1` (Frankfurt).
+> **Note:** For UK gov data residency, deploy into `eu-west-1` (Ireland), `eu-west-2` or `eu-central-1` (Frankfurt).
 
 ## Examples
 
@@ -284,7 +284,7 @@ The `terraform-docs` utility is used to generate this README. Follow the below s
 | Name | Description | Type | Default | Required |
 | ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_agent_space_name"></a> [agent\_space\_name](#input\_agent\_space\_name) | Display name of the DevOps Agent Space (shown in the console — spaces allowed) | `string` | n/a | yes |
-| <a name="input_agentspace_region"></a> [agentspace\_region](#input\_agentspace\_region) | AWS region where the Agent Space is deployed. Supported regions: us-east-1, us-west-2, eu-west-1, eu-central-1, ap-southeast-2, ap-northeast-1. eu-west-2 (London) is not supported. | `string` | n/a | yes |
+| <a name="input_agentspace_region"></a> [agentspace\_region](#input\_agentspace\_region) | AWS region where the Agent Space is deployed. Supported regions: us-east-1, us-west-2, eu-west-1, eu-west-2, eu-central-1, ap-southeast-2, ap-northeast-1. . | `string` | n/a | yes |
 | <a name="input_agent_space_description"></a> [agent\_space\_description](#input\_agent\_space\_description) | Description for the DevOps Agent Space | `string` | `"AWS DevOps Agent Space"` | no |
 | <a name="input_name_prefix"></a> [name\_prefix](#input\_name\_prefix) | Short slug used in IAM role names — no spaces or special chars. Defaults to agent\_space\_name with spaces replaced by hyphens if not set. | `string` | `""` | no |
 | <a name="input_secondary_accounts"></a> [secondary\_accounts](#input\_secondary\_accounts) | Map of secondary accounts to associate as secondary sources. Key is a short label (used in resource names). Leave empty on first apply; populate after capturing agent\_space\_arn. | <pre>map(object({<br/>    account_id             = string<br/>    cross_account_role_arn = string<br/>  }))</pre> | `{}` | no |

@@ -20,11 +20,11 @@ variable "agent_space_description" {
 }
 
 variable "agentspace_region" {
-  description = "AWS region where the Agent Space is deployed. Supported regions: us-east-1, us-west-2, eu-west-1, eu-central-1, ap-southeast-2, ap-northeast-1. eu-west-2 (London) is not supported."
+  description = "AWS region where the Agent Space is deployed. Supported regions: us-east-1, us-west-2, eu-west-1, eu-west-2, eu-central-1, ap-southeast-2, ap-northeast-1."
   type        = string
   validation {
-    condition     = contains(["us-east-1", "us-west-2", "eu-west-1", "eu-central-1", "ap-southeast-2", "ap-northeast-1"], var.agentspace_region)
-    error_message = "Agent Space can only be deployed in us-east-1, us-west-2, eu-west-1, eu-central-1, ap-southeast-2, or ap-northeast-1. eu-west-2 (London) is not supported."
+    condition     = contains(["us-east-1", "us-west-2", "eu-west-1", "eu-west-2", "eu-central-1", "ap-southeast-2", "ap-northeast-1"], var.agentspace_region)
+    error_message = "Agent Space can only be deployed in us-east-1, us-west-2, eu-west-1, eu-west-2, eu-central-1, ap-southeast-2, or ap-northeast-1."
   }
 }
 
