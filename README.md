@@ -230,6 +230,7 @@ The `agentspace_region` variable is validated against the regions where the `aid
 | `us-east-1` | US East (N. Virginia) |
 | `us-west-2` | US West (Oregon) |
 | `eu-west-1` | Europe (Ireland) |
+| `eu-west-2` | Europe (London)  |
 | `eu-central-1` | Europe (Frankfurt) |
 | `ap-southeast-2` | Asia Pacific (Sydney) |
 | `ap-northeast-1` | Asia Pacific (Tokyo) |
